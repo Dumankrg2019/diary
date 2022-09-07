@@ -54,4 +54,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/recyclerView"
         app:layout_constraintTop_toBottomOf="@+id/ivNoData" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

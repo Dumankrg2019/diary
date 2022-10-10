@@ -12,7 +12,7 @@ import kaz.dev.thoughtdiary.data.models.ToDoData
 @TypeConverters(Converter::class)
 abstract class TodoDatabase: RoomDatabase() {
 
-    abstract fun getToDo(): ToDoData
+    abstract fun toDoDao(): ToDoDao
 
     companion object {
         @Volatile

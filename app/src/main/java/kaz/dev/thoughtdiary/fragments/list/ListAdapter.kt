@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kaz.dev.thoughtdiary.R
 import kaz.dev.thoughtdiary.data.models.Priority
@@ -39,6 +40,12 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
      holder.binding.tvTitleText.text = dataList[position].title
      holder.binding.tvDescriptionText.text = dataList[position].description
+
+        //при клике на объект из списка - переходитв  окно правки объекта
+     holder.binding.rowBackground.setOnClickListener{
+         val action = ListFragmentDirections.actionListFragmentToUpdateFragment(dataList[position])
+         holder.itemView.findNavController().navigate(action)
+     }
         when(dataList[position].priority) {
             Priority.HIGH -> holder.binding.cvPriorityIndicator
                 .setCardBackgroundColor(ContextCompat.getColor(holder.itemView.context, R.color.red))

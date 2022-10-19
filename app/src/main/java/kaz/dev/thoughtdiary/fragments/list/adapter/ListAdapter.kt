@@ -1,18 +1,18 @@
-package kaz.dev.thoughtdiary.fragments.list
+package kaz.dev.thoughtdiary.fragments.list.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kaz.dev.thoughtdiary.R
 import kaz.dev.thoughtdiary.data.models.Priority
 import kaz.dev.thoughtdiary.data.models.ToDoData
 import kaz.dev.thoughtdiary.databinding.RowLayoutBinding
+import kaz.dev.thoughtdiary.fragments.list.ListFragmentDirections
 
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
@@ -62,7 +62,10 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
     }
 
     fun setData(toDoData: List<ToDoData>) {
+        val toDoDoffUtil = ToDoDiffUtil(dataList, toDoData)
+        val toDoDoffResult = DiffUtil.calculateDiff(toDoDoffUtil)
         this.dataList = toDoData
-        notifyDataSetChanged()
+       //    notifyDataSetChanged()
+        toDoDoffResult.dispatchUpdatesTo(this)
     }
 }

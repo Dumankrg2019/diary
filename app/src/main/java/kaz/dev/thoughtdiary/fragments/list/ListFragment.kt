@@ -11,11 +11,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kaz.dev.thoughtdiary.R
 import kaz.dev.thoughtdiary.data.models.ToDoData
 import kaz.dev.thoughtdiary.data.viewmodel.SharedViewModel
 import kaz.dev.thoughtdiary.data.viewmodel.ToDoViewModel
 import kaz.dev.thoughtdiary.databinding.FragmentListBinding
+import kaz.dev.thoughtdiary.fragments.list.adapter.ListAdapter
 
 class ListFragment : Fragment() {
 
@@ -51,6 +53,9 @@ class ListFragment : Fragment() {
 
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.recyclerView.itemAnimator = SlideInUpAnimator().apply {
+            addDuration = 300
+        }
         swipeToDelete(binding.recyclerView)
 
         mToDoViewModel.getAllData.observe(viewLifecycleOwner, {data->
@@ -107,7 +112,7 @@ class ListFragment : Fragment() {
                 //delete item
                 mToDoViewModel.deleteItem(deletedItem)
 
-                adapter.notifyItemRemoved(viewHolder.adapterPosition) //fo restore deleted item
+                adapter.notifyItemRemoved(viewHolder.adapterPosition) //for restore deleted item
 //                Toast.makeText(requireActivity(),
 //                    "Successfully removed: '${deletedItem.title}'",
 //                    Toast.LENGTH_SHORT).show()

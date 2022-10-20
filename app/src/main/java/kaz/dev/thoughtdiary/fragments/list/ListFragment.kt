@@ -3,6 +3,7 @@ package kaz.dev.thoughtdiary.fragments.list
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,7 +20,7 @@ import kaz.dev.thoughtdiary.data.viewmodel.ToDoViewModel
 import kaz.dev.thoughtdiary.databinding.FragmentListBinding
 import kaz.dev.thoughtdiary.fragments.list.adapter.ListAdapter
 
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private  var _binding:FragmentListBinding? = null
     private val binding get() = _binding!!
@@ -80,11 +81,18 @@ class ListFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.list_fragment_menu, menu)
+
+        val search = menu.findItem(R.id.menu_search)
+        val searchView = search.actionView as? SearchView
+        searchView?.isSubmitButtonEnabled = true
+        searchView?.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.menu_delete_all) {
-            confirmRemoval()
+        when(item.itemId) {
+            R.id.menu_delete_all -> confirmRemoval()
+            R.id.menu_priority_high -> mToDoViewModel.sortByHighPriority.observe(this, { adapter.setData(it)})
+            R.id.menu_priority_low -> mToDoViewModel.sortByLowPriority.observe(this, { adapter.setData(it)})
         }
         return super.onOptionsItemSelected(item)
     }
@@ -102,6 +110,30 @@ class ListFragment : Fragment() {
         builder.setTitle("Delete Everything?")
         builder.setMessage("Are you sure you want to remove Everything?")
         builder.create().show()
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+            if(query != null) {
+                searchThroughDatabase(query)
+            }
+        return true
+    }
+
+    private fun searchThroughDatabase(query:String) {
+       val searchQuery = "%$query%"
+
+        mToDoViewModel.searchDatabase(searchQuery).observe(this, {list->
+            list?.let {
+                adapter.setData(it)
+            }
+        })
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        if(newText != null) {
+            searchThroughDatabase(newText)
+        }
+        return true
     }
 
     private fun swipeToDelete(recyclerView:RecyclerView) {
@@ -136,4 +168,6 @@ class ListFragment : Fragment() {
         }
         snackBar.show()
     }
+
+
 }

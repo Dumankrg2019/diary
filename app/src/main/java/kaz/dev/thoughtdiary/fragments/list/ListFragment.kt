@@ -3,14 +3,13 @@ package kaz.dev.thoughtdiary.fragments.list
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.*
+import android.widget.GridLayout
 import androidx.appcompat.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.google.android.material.snackbar.Snackbar
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 import kaz.dev.thoughtdiary.R
@@ -19,6 +18,7 @@ import kaz.dev.thoughtdiary.data.viewmodel.SharedViewModel
 import kaz.dev.thoughtdiary.data.viewmodel.ToDoViewModel
 import kaz.dev.thoughtdiary.databinding.FragmentListBinding
 import kaz.dev.thoughtdiary.fragments.list.adapter.ListAdapter
+import kaz.dev.thoughtdiary.utils.hideKeyboard
 
 class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 
@@ -45,6 +45,9 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         // set menu
         setHasOptionsMenu(true)
 
+        //call func hide keyboard
+        hideKeyboard(requireActivity())
+
         return view
     }
 
@@ -53,7 +56,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         super.onViewCreated(view, savedInstanceState)
 
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
+        binding.recyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.recyclerView.itemAnimator = SlideInUpAnimator().apply {
             addDuration = 300
         }
@@ -150,7 +153,7 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
 //                    Toast.LENGTH_SHORT).show()
 
                 //restore deleted item
-                restoreDeletedData(viewHolder.itemView, deletedItem, viewHolder.adapterPosition)
+                restoreDeletedData(viewHolder.itemView, deletedItem)
             }
         }
 
@@ -158,13 +161,12 @@ class ListFragment : Fragment(), SearchView.OnQueryTextListener {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
-    private fun restoreDeletedData(view:View, deletedItem:ToDoData, position:Int) {
+    private fun restoreDeletedData(view:View, deletedItem:ToDoData) {
         val snackBar = Snackbar.make(
             view, "Deleted '${deletedItem.title}'", Snackbar.LENGTH_LONG
         )
         snackBar.setAction("Udo") {
             mToDoViewModel.insertData(deletedItem)
-            adapter.notifyItemChanged(position)
         }
         snackBar.show()
     }
